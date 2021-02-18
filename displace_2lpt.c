@@ -84,7 +84,7 @@ int displace_2lpt(int np, int ng, real boxsize, real *psi1, real g1, real gdot1,
 					xo * yi * zo * psi2[ind(ip1, jp, kp1)] +
 					xi * yo * zo * psi2[ind(ip1, jp1, kp)] +
 					xo * yo * zo * psi2[ind(ip1, jp1, kp1)];
-			hh[i] = qq + qoffset + g1 * psi1x + g2 * psi2x;
+			hh[i] = (qq + qoffset) + g1 * psi1x + g2 * psi2x;
 			if (hh[i] < 0.)
 				hh[i] += boxsize;
 			else if (hh[i] > boxsize)

@@ -8,11 +8,14 @@
 #define pi 3.1415926535897932384626
 #define index(i, j, k) ((k) + ((nby2p1) * (j + ((n) * (i)))))
 
-int enforce_hermitian(int n, fftwe_complex * array); 
-
 int greens(int n, real dk, fftwe_complex * rhohat, int d1, int d2) {
 	long nby2 = n / 2;
-	long nby2p1 = nby2 + 1; 
+	long nby2p1 = nby2 + 1;
+	if (d1 == 0 && d2 == -1) {
+		FILE * outfile = fopen("ic2lpt_modes_nyquist.dat", "wb");
+		fwrite(rhohat, sizeof(real), 2 * n * n * nby2p1, outfile);
+		fclose(outfile);
+	}
 	#pragma omp parallel
 	{
 		long ind, k[3];
@@ -42,12 +45,10 @@ int greens(int n, real dk, fftwe_complex * rhohat, int d1, int d2) {
 						}
 						rhohat[ind] *= I * dk * (double) k[d2]; 
 					}
-
 				}
 			}
 		}
-	} 
+	}
 	rhohat[0] = 0.;
-	//enforce_hermitian(n, rhohat); 
 	return 0; 
 }

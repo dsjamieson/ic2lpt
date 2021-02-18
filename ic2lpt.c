@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
 		real h_sqrta = hubble * sqrt(athen);
 		long skip = np3 / 10;
 		for (long i = skip / 2; i < np3; i += skip)
-			printf("pos: %.4e %.4e %.4e | vel: %+.4e %+.4e %+.4e\n", xx[i], yy[i], zz[i], vx[i] / h_sqrta, vy[i] / h_sqrta, vz[i] / h_sqrta);
+			printf("pos: %+.4e %+.4e %+.4e | vel: %+.4e %+.4e %+.4e\n", xx[i], yy[i], zz[i], vx[i] / h_sqrta, vy[i] / h_sqrta, vz[i] / h_sqrta);
 	}
 
 //	printf("output data ...\n"); fflush(stdout);
