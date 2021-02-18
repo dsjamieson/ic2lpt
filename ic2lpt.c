@@ -34,7 +34,6 @@ int main(int argc, char *argv[]) {
 	real * bf0x, * bf1x, * bf2x, * bf3x;
 	fftwe_plan bf0k_plan, bf1k_plan, bf2k_plan, bf1x_plan, bf2x_plan;
 
-	//srand48(time(NULL));
 	seed = atoi(argv[1]);
 	np = atoi(argv[2]);
 	ng = atoi(argv[3]);
