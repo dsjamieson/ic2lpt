@@ -16,13 +16,11 @@ void write_power (real dk, int n, fftwe_complex * complex_delta, real g1, real b
 	long nyquist = n / 2;
 	long nby2p1 = nyquist + 1;
 	int np = (int) floor((0.5 * dk * (n - 1)) / bin) + 3;
-
 	for (long i = 0; i <= np; i++) {
 		rk[i] = 0.;
 		Pk[i] = 0.;
 		jpower[i] = 0.;
 	}
-
 	/* this will help extracting information from data */
 	kmod = (long *) calloc (n, sizeof (long));
 	if (kmod == NULL) {
@@ -61,7 +59,6 @@ void write_power (real dk, int n, fftwe_complex * complex_delta, real g1, real b
 			}
 		}
 	}
-
 	char outdata[256];
 	sprintf(outdata,"pk_%s.txt", fname);
 	FILE *fpout;

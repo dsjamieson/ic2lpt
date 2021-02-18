@@ -24,7 +24,6 @@ double g_redshift;
 double a_exp;
 double g_hubble;
 double part_mass;
-
 int g_files;
 
 
