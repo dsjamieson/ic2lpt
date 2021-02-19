@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
 	printf("g1, g2: %f %f %f %f\n", g1, g2, gdot1, gdot2);
 
 //	printf("Generating modes\n"); fflush(stdout);
-	if (1) {
+	if (0) {
 		gsl_rng_env_setup();
 		T = gsl_rng_default;
 		rng = gsl_rng_alloc(T);
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
 		real h_sqrta = hubble * sqrt(athen);
 		long skip = np3 / 10;
 		for (long i = skip / 2; i < np3; i += skip)
-			printf("pos: %+.4e %+.4e %+.4e | vel: %+.4e %+.4e %+.4e\n", xx[i], yy[i], zz[i], vx[i] / h_sqrta, vy[i] / h_sqrta, vz[i] / h_sqrta);
+			printf("%06d pos: %+.4e %+.4e %+.4e | vel: %+.4e %+.4e %+.4e\n", i, xx[i], yy[i], zz[i], vx[i] / h_sqrta, vy[i] / h_sqrta, vz[i] / h_sqrta);
 	}
 
 //	printf("output data ...\n"); fflush(stdout);
