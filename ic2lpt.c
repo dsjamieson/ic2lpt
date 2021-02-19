@@ -163,30 +163,26 @@ int main(int argc, char *argv[]) {
 	gdot2 = d2then * f2then * hthen * 100. * athen / dnow / dnow;
 	printf("g1, g2: %f %f %f %f\n", g1, g2, gdot1, gdot2);
 
-//	printf("Generating modes\n"); fflush(stdout);
-	if (0) {
+	printf("Generating modes\n"); fflush(stdout);
+	if (1) {
 		gsl_rng_env_setup();
 		T = gsl_rng_default;
 		rng = gsl_rng_alloc(T);
 		gsl_rng_set(rng,seed);
 		ranc_ctr(seed);
 		get_rhohat(dk, ng, bf1k);
-		//for (int i = 0; i < 10; i++)
-		//	printf("(%+.4e) + i (%+.4e)\n", creal(bf1k[i]) * sqrt_vol, cimag(bf1k[i]) * sqrt_vol);
 	}
 	else {
 		FILE * modes_file = fopen("test_modes.dat", "rb");
 		fread(bf1k, sizeof(double), 2 * ng3k, modes_file);
 		fclose(modes_file);
-		//for (int i = 0; i < 10; i++)
-		//	printf("(%+.4e) + i (%+.4e)\n", creal(bf1k[i]), cimag(bf1k[i]));
 		#pragma omp parallel for
 		for (long i = 0; i < ng3k; i++)
 			bf1k[i] /= sqrt_vol;
 	}
 	write_power(dk, ng, bf1k, g1, dk, dk, outprefix);
 
-//	printf("Computing 2LPT potential\n"); fflush(stdout);
+	printf("Computing 2LPT potential\n"); fflush(stdout);
 	memcpy(bf3k, bf1k, ng3k * sizeof(fftwe_complex));
 	memcpy(bf2k, bf1k, ng3k * sizeof(fftwe_complex));
 	memcpy(bf0k, bf1k, ng3k * sizeof(fftwe_complex));
@@ -220,7 +216,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	for (int i = 0; i < 3; i++) { 
-//		printf("Displacement %d \n", i); fflush(stdout);
+		printf("Displacement %d \n", i); fflush(stdout);
 			memcpy(bf0k, bf2k, ng3k * sizeof(fftwe_complex)); 
 			memcpy(bf1k, bf3k, ng3k * sizeof(fftwe_complex)); 
 			greens(ng, dk, bf0k, i, -1);
@@ -230,14 +226,16 @@ int main(int argc, char *argv[]) {
 			displace_2lpt(np, ng, boxsize, bf1x, g1, gdot1, bf0x, g2, gdot2, i); 
 	}
 
+	/*
 	{
 		real h_sqrta = hubble * sqrt(athen);
 		long skip = np3 / 10;
 		for (long i = skip / 2; i < np3; i += skip)
 			printf("%06d pos: %+.4e %+.4e %+.4e | vel: %+.4e %+.4e %+.4e\n", i, xx[i], yy[i], zz[i], vx[i] / h_sqrta, vy[i] / h_sqrta, vz[i] / h_sqrta);
 	}
+	*/
 
-//	printf("output data ...\n"); fflush(stdout);
+	printf("Writing data ...\n"); fflush(stdout);
 	omega_l = 0; 
 	write_gadget(np,boxsize, zthen, hubble, omega_m, omega_l, outprefix, no_files);
 

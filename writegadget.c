@@ -55,14 +55,9 @@ void ShowHeader()
       header1.npart[i] =(header1.npart[i]);
       header1.npartTotal[i] = (header1.npartTotal[i]);
       header1.mass[i]=(header1.mass[i]);
-  //printf("Npart %d \ntotal %d\nMass %lf\n"
-//	    ,header1.npart[i],header1.npartTotal[i],header1.mass[i]);	
     }
 
   header1.BoxSize=(header1.BoxSize);
-// printf("Box %lf\n",header1.BoxSize);
-// printf("redshift: %lf\n",header1.redshift);
- fflush(stdout);
 }
 
 
@@ -121,17 +116,16 @@ void write_snapshot(char *fname, int file){
 	      buf   = (char *)  calloc(256,   sizeof(char));
 	
 	      if(g_files>1)
-		  sprintf(buf,"gadget_%s.%d",fname);
+		  sprintf(buf,"gadget_%s.%d", fname, file);
 	      else
-		  sprintf(buf,"gadget_%s.dat",fname);
+		  sprintf(buf,"gadget_%s.dat", fname);
 	      fd=fopen(buf,"w");
 	      if(fd==NULL)
 	      {
 		  printf("can't create file `%s`\n",buf);
 		  exit(0);
 	      }
-	      
-	      
+	     
 	      write_header(&header1);
 	      write_num_bytes(fd,sizeof(header1));
 	      fwrite(&header1, sizeof(struct io_header_1), 1, fd);
@@ -172,10 +166,6 @@ void write_snapshot(char *fname, int file){
 	      write_num_bytes(fd,myNpart*sizeof(unsigned int));
 	       
 	    fclose(fd);
-
-		//unsigned int np3 = (header1).npart[1];
-  		//printf("pos: %.4e %.4e %.4e | vel: %+.4e %+.4e %+.4e\n", xx[0] * 1.e-3, yy[0] * 1.e-3, zz[0] * 1.e-3, vx[0], vy[0], vz[0]);
-  		//printf("pos: %.4e %.4e %.4e | vel: %+.4e %+.4e %+.4e\n", xx[np3-1] * 1.e-3, yy[np3-1] * 1.e-3, zz[np3-1] * 1.e-3, vx[np3-1], vy[np3-1], vz[np3-1]);
 
 	return;
 }
