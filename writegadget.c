@@ -116,9 +116,9 @@ void write_snapshot(char *fname, int file){
 	      buf   = (char *)  calloc(256,   sizeof(char));
 	
 	      if(g_files>1)
-		  sprintf(buf,"gadget_%s.%d", fname, file);
+		  sprintf(buf,"%s.%d", fname, file);
 	      else
-		  sprintf(buf,"gadget_%s.dat", fname);
+		  sprintf(buf,"%s.dat", fname);
 	      fd=fopen(buf,"w");
 	      if(fd==NULL)
 	      {

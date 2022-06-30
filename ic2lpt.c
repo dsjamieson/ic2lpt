@@ -25,8 +25,8 @@ gsl_rng * rng;
 real dk, omega_m, omega_l, hubble;
 
 int main(int argc, char *argv[]) {
-	if (argc != 18) {
-		printf("Usage: ic2lpt seed Np Ng L/(Mpc/h) Om h D0 zi hi Di fi D2i f2i pk(z=0) outprefix nfiles nthreads\n");
+	if (argc != 3) {
+		printf("Usage: ic2lpt param_filename nthreads\n");
 		return 0;
 	}
 	int seed, np, ng, nthreads, no_files;
@@ -38,23 +38,31 @@ int main(int argc, char *argv[]) {
 	real * bf0x, * bf1x, * bf2x, * bf3x;
 	fftwe_plan bf0k_plan, bf1k_plan, bf2k_plan, bf1x_plan, bf2x_plan;
 
-	seed = atoi(argv[1]);
-	np = atoi(argv[2]);
-	ng = atoi(argv[3]);
-	boxsize = atof(argv[4]);
-	omega_m = atof(argv[5]);
-	hubble = atof(argv[6]);
-	dnow = atof(argv[7]);
-	zthen = atof(argv[8]);
-	hthen = atof(argv[9]);
-	dthen = atof(argv[10]);
-	fthen = atof(argv[11]);
-	d2then = atof(argv[12]);
-	f2then = atof(argv[13]);
-	strcpy(pk_file,argv[14]);
-	strcpy(outprefix,argv[15]);
-	no_files = atoi(argv[16]);
-	nthreads = atoi(argv[17]);
+   {
+        FILE * f = fopen(argv[1],"r");
+		if (f == NULL) { 
+			fprintf(stderr, "Error, could not open parameter file %s for reading\n", argv[1]);
+			exit(-1); 
+		}
+        char param_name[100];
+        readIntParam(f, "NumPart1D", &np);
+        readIntParam(f, "NumMesh1D", &ng);
+        readIntParam(f, "Seed", &seed);
+        readIntParam(f, "NumFiles", &no_files);
+        readDoubleParam(f, "BoxLength", &boxsize);
+        readDoubleParam(f, "HubbleParam", &hubble);
+        readDoubleParam(f, "OmegaM", &omega_m);
+        readDoubleParam(f, "D0", &dnow);
+        readDoubleParam(f, "Zi", &zthen);
+        readDoubleParam(f, "Hi", &hthen);
+        readDoubleParam(f, "D1i", &dthen);
+        readDoubleParam(f, "F1i", &fthen);
+        readDoubleParam(f, "D2i", &d2then);
+        readDoubleParam(f, "F2i", &f2then);
+        readStringParam(f, "PowerFile", pk_file);
+        readStringParam(f, "OutBase", outprefix);
+    }
+	nthreads = atoi(argv[2]);
 
 	 omp_set_num_threads(nthreads);
 	 if(fftw_init_threads() == 0){
