@@ -13,6 +13,10 @@
 
 #define MAXLINELEN 1000
 
+void readIntParam(FILE * t_file, const char t_param_name[], int * t_value);
+void readDoubleParam(FILE * t_file, const char t_param_name[], double * t_value);
+void readStringParam(FILE * t_file, const char t_param_name[], char * t_value);
+
 int nk;
 long ranc_counter;
 real * ktable, * ptable;
@@ -21,8 +25,8 @@ gsl_rng * rng;
 real dk, omega_m, omega_l, hubble;
 
 int main(int argc, char *argv[]) {
-	if (argc != 18) {
-		printf("Usage: ic2lpt seed Np Ng L/(Mpc/h) Om h D0 zi hi Di fi D2i f2i pk(z=0) outprefix nfiles nthreads\n");
+	if (argc != 3) {
+		printf("Usage: ic2lpt param_filename nthreads\n");
 		return 0;
 	}
 	int seed, np, ng, nthreads, no_files;
@@ -34,23 +38,31 @@ int main(int argc, char *argv[]) {
 	real * bf0x, * bf1x, * bf2x, * bf3x;
 	fftwe_plan bf0k_plan, bf1k_plan, bf2k_plan, bf1x_plan, bf2x_plan;
 
-	seed = atoi(argv[1]);
-	np = atoi(argv[2]);
-	ng = atoi(argv[3]);
-	boxsize = atof(argv[4]);
-	omega_m = atof(argv[5]);
-	hubble = atof(argv[6]);
-	dnow = atof(argv[7]);
-	zthen = atof(argv[8]);
-	hthen = atof(argv[9]);
-	dthen = atof(argv[10]);
-	fthen = atof(argv[11]);
-	d2then = atof(argv[12]);
-	f2then = atof(argv[13]);
-	strcpy(pk_file,argv[14]);
-	strcpy(outprefix,argv[15]);
-	no_files = atoi(argv[16]);
-	nthreads = atoi(argv[17]);
+   {
+        FILE * f = fopen(argv[1],"r");
+		if (f == NULL) { 
+			fprintf(stderr, "Error, could not open parameter file %s for reading\n", argv[1]);
+			exit(-1); 
+		}
+        char param_name[100];
+        readIntParam(f, "NumPart1D", &np);
+        readIntParam(f, "NumMesh1D", &ng);
+        readIntParam(f, "Seed", &seed);
+        readIntParam(f, "NumFiles", &no_files);
+        readDoubleParam(f, "BoxLength", &boxsize);
+        readDoubleParam(f, "HubbleParam", &hubble);
+        readDoubleParam(f, "OmegaM", &omega_m);
+        readDoubleParam(f, "D0", &dnow);
+        readDoubleParam(f, "Zi", &zthen);
+        readDoubleParam(f, "Hi", &hthen);
+        readDoubleParam(f, "D1i", &dthen);
+        readDoubleParam(f, "F1i", &fthen);
+        readDoubleParam(f, "D2i", &d2then);
+        readDoubleParam(f, "F2i", &f2then);
+        readStringParam(f, "PowerFile", pk_file);
+        readStringParam(f, "OutBase", outprefix);
+    }
+	nthreads = atoi(argv[2]);
 
 	 omp_set_num_threads(nthreads);
 	 if(fftw_init_threads() == 0){
@@ -258,4 +270,66 @@ int main(int argc, char *argv[]) {
 	free(ptable);
 	printf("done!\n");
 	return 0;
+}
+
+void readIntParam(FILE * t_file, const char t_param_name[], int * t_value) {
+    rewind(t_file);
+	int value;
+    char param_name[100];
+	char line[MAXLINELEN];
+    while (fgets(line, MAXLINELEN, t_file) != NULL) {
+        sscanf(line,"%s", &param_name);
+        if (!strcmp(param_name, t_param_name)) {
+            sscanf(line,"%s %d", &param_name, &value);
+            break;
+        }
+    }
+    rewind(t_file);
+    if (value == 0) {
+        fprintf(stderr, "Error, no value found for %s in parameter file\n", t_param_name);
+        exit(-1);
+    }
+	(*t_value) = value;
+    return;
+}
+
+void readDoubleParam(FILE * t_file, const char t_param_name[], double * t_value) {
+    rewind(t_file);
+ 	double value = 0;
+    char param_name[100];
+    char line[MAXLINELEN];
+    while (fgets(line, MAXLINELEN, t_file) != NULL) {
+        sscanf(line,"%s", &param_name);
+        if (!strcmp(param_name, t_param_name)) {
+            sscanf(line,"%s %lf", &param_name, &value);
+            break;
+        }
+    }
+    rewind(t_file);
+    if (value == 0.) {
+        fprintf(stderr, "Error, no value found for %s in parameter file\n", t_param_name);
+        exit(-1);
+    }
+	(*t_value) = value;
+    return;
+}
+
+void readStringParam(FILE * t_file, const char t_param_name[], char * t_value) {
+    rewind(t_file);
+    sprintf(t_value, "");
+    char param_name[100];
+    char line[MAXLINELEN];
+    while (fgets(line, MAXLINELEN, t_file) != NULL) {
+        sscanf(line,"%s", &param_name);
+        if (!strcmp(param_name, t_param_name)) {
+            sscanf(line,"%s %s", &param_name, &t_value[0]);
+            break;
+        }
+    }
+    rewind(t_file);
+    if (!strcmp(t_value, "")) {
+        fprintf(stderr, "Error, no value found for %s in parameter file\n", t_param_name);
+        exit(-1);
+    }
+    return;
 }

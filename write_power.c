@@ -60,7 +60,7 @@ void write_power (real dk, int n, fftwe_complex * complex_delta, real g1, real b
 		}
 	}
 	char outdata[256];
-	sprintf(outdata,"pk_%s.txt", fname);
+	sprintf(outdata,"%s_pk.txt", fname);
 	FILE *fpout;
 	if((fpout = fopen(outdata, "w")) == NULL) {
 		printf("I cannot open %s\n", outdata);
