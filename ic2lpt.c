@@ -13,6 +13,10 @@
 
 #define MAXLINELEN 1000
 
+void readIntParam(FILE * t_file, const char t_param_name[], int * t_value);
+void readDoubleParam(FILE * t_file, const char t_param_name[], double * t_value);
+void readStringParam(FILE * t_file, const char t_param_name[], char * t_value);
+
 int nk;
 long ranc_counter;
 real * ktable, * ptable;
@@ -258,4 +262,66 @@ int main(int argc, char *argv[]) {
 	free(ptable);
 	printf("done!\n");
 	return 0;
+}
+
+void readIntParam(FILE * t_file, const char t_param_name[], int * t_value) {
+    rewind(t_file);
+	int value;
+    char param_name[100];
+	char line[MAXLINELEN];
+    while (fgets(line, MAXLINELEN, t_file) != NULL) {
+        sscanf(line,"%s", &param_name);
+        if (!strcmp(param_name, t_param_name)) {
+            sscanf(line,"%s %d", &param_name, &value);
+            break;
+        }
+    }
+    rewind(t_file);
+    if (value == 0) {
+        fprintf(stderr, "Error, no value found for %s in parameter file\n", t_param_name);
+        exit(-1);
+    }
+	(*t_value) = value;
+    return;
+}
+
+void readDoubleParam(FILE * t_file, const char t_param_name[], double * t_value) {
+    rewind(t_file);
+ 	double value = 0;
+    char param_name[100];
+    char line[MAXLINELEN];
+    while (fgets(line, MAXLINELEN, t_file) != NULL) {
+        sscanf(line,"%s", &param_name);
+        if (!strcmp(param_name, t_param_name)) {
+            sscanf(line,"%s %lf", &param_name, &value);
+            break;
+        }
+    }
+    rewind(t_file);
+    if (value == 0.) {
+        fprintf(stderr, "Error, no value found for %s in parameter file\n", t_param_name);
+        exit(-1);
+    }
+	(*t_value) = value;
+    return;
+}
+
+void readStringParam(FILE * t_file, const char t_param_name[], char * t_value) {
+    rewind(t_file);
+    sprintf(t_value, "");
+    char param_name[100];
+    char line[MAXLINELEN];
+    while (fgets(line, MAXLINELEN, t_file) != NULL) {
+        sscanf(line,"%s", &param_name);
+        if (!strcmp(param_name, t_param_name)) {
+            sscanf(line,"%s %s", &param_name, &t_value[0]);
+            break;
+        }
+    }
+    rewind(t_file);
+    if (!strcmp(t_value, "")) {
+        fprintf(stderr, "Error, no value found for %s in parameter file\n", t_param_name);
+        exit(-1);
+    }
+    return;
 }
